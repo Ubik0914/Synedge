@@ -178,6 +178,12 @@ Gmail API は `packages/mail-core/src/testing/fake-gmail.ts`（Gmail REST の形
 
 ## 5. Supabase（DB）
 
+> **セットアップ済み（2026-10-12）**: プロジェクト `synedge`（ref `wpstgeoqwqgbqojnphlb`、ap-northeast-1、Free プラン）を作成し、`20261010000000_init.sql` を適用済み。
+> - 全8テーブルで RLS 有効・`anon` / `authenticated` の SELECT 権限なしを確認。Security Advisor は「RLS Enabled No Policy」（INFO、意図どおり）のみ
+> - `supabase_migrations.schema_migrations` のバージョンをファイル名と揃え、`synedge_migrations` にも適用済みとして記録した（CLI・同梱ランナーのどちらを使っても再適用されない）
+> - 残り：ダッシュボード「Connect」→ Transaction pooler の接続文字列を `DATABASE_URL` に設定（DBパスワードはダッシュボードで再設定して取得）
+> - Free プランは1週間アクセスがないと一時停止する。停止した場合はダッシュボードから再開する
+
 1. Supabase プロジェクトを作成。
 2. 接続文字列（Transaction pooler、ポート 6543）を `DATABASE_URL` に設定。`prepare: false` で接続するため pooler で動く。
 3. マイグレーションを適用（どちらか一方を使う）:
