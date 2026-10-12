@@ -1,0 +1,28 @@
+{
+  "search": [
+    "Mod+K",
+    "Mod+G"
+  ],
+  "search-in-vault": [
+    "Mod+Shift+F"
+  ],
+  "new-note": [
+    "Mod+N"
+  ],
+  "toggle-sidebar": [
+    "Mod+Shift+D"
+  ],
+  "switch-profile": [
+    "Mod+Shift+M"
+  ],
+  "open-settings": [
+    "Mod+,",
+    "Mod+Shift+,"
+  ],
+  "shortcut-help": [
+    "?"
+  ],
+  "toggle-fullscreen": [
+    "Mod+Shift+Enter"
+  ]
+}

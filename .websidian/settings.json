@@ -1,0 +1,22 @@
+{
+  "betaFeatures": false,
+  "showDotDirs": false,
+  "showClaudeMd": false,
+  "showImages": false,
+  "searchSort": "name",
+  "language": "auto",
+  "folderIcon": "folder",
+  "untitledName": "first-line",
+  "noteFolder": "",
+  "importFolder": "",
+  "archiveFolder": ".archive",
+  "captureFolder": "Inbox",
+  "noteFont": "system",
+  "interfaceFont": "system",
+  "codeFont": "system",
+  "noteFontSize": 16,
+  "noteWidth": 100,
+  "publicReadonly": false,
+  "autosaveDelayMs": 5000,
+  "readAfterSave": true
+}
