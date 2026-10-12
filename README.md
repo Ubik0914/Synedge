@@ -178,18 +178,18 @@ Gmail API は `packages/mail-core/src/testing/fake-gmail.ts`（Gmail REST の形
 
 ## 5. Supabase（DB）
 
-> **セットアップ済み（2026-10-12）**: プロジェクト `synedge`（ref `wpstgeoqwqgbqojnphlb`、ap-northeast-1、Free プラン）を作成し、`20261010000000_init.sql` を適用済み。
-> - 全8テーブルで RLS 有効・`anon` / `authenticated` の SELECT 権限なしを確認。Security Advisor は「RLS Enabled No Policy」（INFO、意図どおり）のみ
-> - `supabase_migrations.schema_migrations` のバージョンをファイル名と揃え、`synedge_migrations` にも適用済みとして記録した（CLI・同梱ランナーのどちらを使っても再適用されない）
-> - 残り：ダッシュボード「Connect」→ Transaction pooler の接続文字列を `DATABASE_URL` に設定（DBパスワードはダッシュボードで再設定して取得）
-> - Free プランは1週間アクセスがないと一時停止する。停止した場合はダッシュボードから再開する
+Supabase プロジェクトは **navy と共用**する（プロジェクト `navy`、ref `zdzbcfkhqkvbgrqzzshc`、ap-northeast-2）。Free プランの有効プロジェクト数（2つ）を節約するため。
 
-1. Supabase プロジェクトを作成。
-2. 接続文字列（Transaction pooler、ポート 6543）を `DATABASE_URL` に設定。`prepare: false` で接続するため pooler で動く。
-3. マイグレーションを適用（どちらか一方を使う）:
-   - Supabase CLI: `supabase link --project-ref <ref>` → `supabase db push`（`supabase/migrations/` を読む）
-   - 同梱ランナー: `DATABASE_URL=... pnpm db:migrate`（`synedge_migrations` テーブルで適用済みを管理）
-4. **RLS**: 全テーブルで RLS を有効化し、ポリシーを作らない。さらに `anon` / `authenticated` から権限を剥奪する。Supabase の公開 API（anon key）からは一切読めない。サーバーだけが `DATABASE_URL` で接続する。Supabase の service role key は使わない（不要）。
+> **セットアップ済み（2026-10-12）**: `synedge` スキーマを作り、`20261010000000_init.sql` を適用済み。
+> - 全8テーブルで RLS 有効・`anon` / `authenticated` はスキーマにもテーブルにも権限なしを確認
+> - Security Advisor の synedge 関連は「RLS Enabled No Policy」（INFO、意図どおり）のみ
+> - 最初に作った専用プロジェクト `synedge`（ref `wpstgeoqwqgbqojnphlb`）は不要になったので一時停止した
+
+1. **専用スキーマ**: Synedge のテーブルはすべて `synedge` スキーマに置き、SQL もすべて `synedge.` 付きで書く。navy の `public`（`user_settings` など同名テーブルあり）とは衝突しない。
+2. 接続文字列（navy と同じ Transaction pooler、ポート 6543）を `DATABASE_URL` に設定。`prepare: false` で接続するため pooler で動く。
+3. マイグレーションは **同梱ランナーだけを使う**: `DATABASE_URL=... pnpm db:migrate`（`synedge.synedge_migrations` で適用済みを管理）。
+   - `supabase db push` は使わない。navy の `supabase_migrations` に Synedge の記録が混ざり、navy 側の CLI 運用が壊れるため。
+4. **RLS**: 全テーブルで RLS を有効化し、ポリシーを作らない。さらに `anon` / `authenticated` から `synedge` スキーマとテーブルの権限を剥奪する。`synedge` スキーマは Supabase の API 設定「Exposed schemas」に**追加しない**。サーバーだけが `DATABASE_URL` で接続する。service role key は使わない（不要）。
 5. 保存するもの: ユーザー（メールアドレス）、Gmail 接続（暗号化トークン・スコープ・状態）、history cursor、watch 期限・エラー、FCM 端末トークン、通知重複排除キー（メッセージID）、送信冪等キー、ログイン受け渡しコード（ハッシュ）、MCP トークン（ハッシュ）、ユーザー設定。**本文・件名・送信者は保存しない。**
 
 ---

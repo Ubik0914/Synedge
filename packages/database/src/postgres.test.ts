@@ -42,25 +42,25 @@ suite("Postgres", () => {
 
   it("公開ロール（anon/authenticated）からは全テーブルを読み書きできない", async () => {
     const tables = ["users", "mail_accounts", "user_settings", "devices", "notification_deliveries", "send_requests", "auth_handoff_codes", "mcp_tokens"];
-    await sql`insert into users (email) values ('rls@example.com') on conflict do nothing`;
+    await sql`insert into synedge.users (email) values ('rls@example.com') on conflict do nothing`;
     for (const role of ["anon", "authenticated"]) {
       for (const t of tables) {
         await expect(
           sql.begin(async (tx) => {
             await tx.unsafe(`set local role ${role}`);
-            return tx.unsafe(`select * from ${t}`);
+            return tx.unsafe(`select * from synedge.${t}`);
           }),
         ).rejects.toThrow(/permission denied/);
       }
     }
     // 権限を誤って付与しても RLS により行は見えない
-    await sql.unsafe(`grant select on users to authenticated`);
+    await sql.unsafe(`grant usage on schema synedge to authenticated; grant select on synedge.users to authenticated`);
     const rows = await sql.begin(async (tx) => {
       await tx.unsafe(`set local role authenticated`);
-      return tx.unsafe(`select * from users`);
+      return tx.unsafe(`select * from synedge.users`);
     });
     expect(rows).toHaveLength(0);
-    await sql.unsafe(`revoke select on users from authenticated`);
+    await sql.unsafe(`revoke select on synedge.users from authenticated; revoke usage on schema synedge from authenticated`);
   });
 
   it("ハンドオフコードは1回限り・期限付き", async () => {
@@ -86,7 +86,7 @@ suite("Postgres", () => {
   });
 
   repositoryContract("postgres", async () => {
-    await sql.unsafe(`truncate users cascade`);
+    await sql.unsafe(`truncate synedge.users cascade`);
     return createPgRepositories(sql);
   });
 });
